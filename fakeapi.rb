@@ -28,10 +28,10 @@ class FakeApi < Sinatra::Base
 
     { input: { content_type: route_name, properties: },
       nested_keys.first => nested_hash[nested_keys.first] }.to_json
-  rescue StandardError => e
-    { error: e.message }.to_json
   rescue RateLimitingError => e
     status 429
+    { error: e.message }.to_json
+  rescue StandardError => e
     { error: e.message }.to_json
   end
 

@@ -21,3 +21,7 @@ gem 'rack-attack'
 
 # Dotenv
 gem 'dotenv'
+
+# For testing
+gem 'rack-test'
+gem 'rspec'
