@@ -1,6 +1,6 @@
-# Sinatra API App
+# Fake APi
 
-This is a simple Ruby Sinatra application that provides a fake API for generating data. It includes rate limiting to prevent abuse of the API.
+This is a simple Ruby Sinatra application that provides a fake API for generating data. Given a type of content, OpenAI's API will return with a JSON object with relevant information based on the content name. Results are cached based on the properties and content name. Only results that aren't cached are rate limited, so fetch to your heart's content for cached content.
 
 ## Features
 
@@ -74,6 +74,10 @@ This is a simple Ruby Sinatra application that provides a fake API for generatin
   ```sh
   curl http://localhost:4567/api/your_route_name?properties=prop1,prop2&key=your_key
   ```
+
+  Rate limiting is disabled by default through the `.env` file, but can be enabled by changing `DISABLE_RATE_LIMITING` to true
+
+  To change the rate limit configuration, update `RATE_LIMIT` and `RATE_LIMIT_PERIOD` in the .env file. `RATE_LIMIT_PERIOD` is in seconds, and defaults to 60 seconds.
 
 ### License
 

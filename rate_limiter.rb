@@ -9,6 +9,8 @@ class RateLimiter
   end
 
   def call(ip)
+    return if ENV['DISABLE_RATE_LIMITING'] == 'true'
+
     key = "#{ip}:#{Time.now.to_i / @period}"
     count = @redis.incr(key)
     @redis.expire(key, @period) if count == 1

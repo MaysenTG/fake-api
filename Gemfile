@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 # For testing
-gem 'byebug', '~> 11.1'
+gem 'byebug', '~> 11.1', group: :development
 
 # Web server
 gem 'falcon', '~> 0.48.2'
