@@ -50,7 +50,7 @@ This is a simple Ruby Sinatra application that provides a fake API for generatin
 5. **Run the application:**
 
    ```sh
-   ruby fakeapi.rb
+   bundle exec bin/rackup -p 4567
    ```
 
    The application will be available at `http://localhost:4567`.
