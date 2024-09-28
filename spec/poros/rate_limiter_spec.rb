@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'rack/test'
 require 'redis'
 require 'byebug'
-require_relative '../rate_limiter'
+require_relative '../../poros/rate_limiter'
 
 RSpec.describe RateLimiter do
   let(:redis) { instance_double(Redis) }
@@ -60,6 +60,25 @@ RSpec.describe RateLimiter do
         expect(redis).to receive(:expire).with("#{ip}:#{Time.now.to_i / 60}", 60)
 
         rate_limiter.call(ip)
+      end
+
+      it 'does not set expiration if the key already exists' do
+        allow(redis).to receive(:incr).and_return(2)
+        expect(redis).not_to receive(:expire)
+
+        rate_limiter.call(ip)
+      end
+
+      it 'handles multiple IP addresses separately' do
+        allow(redis).to receive(:incr).with("#{ip}:#{Time.now.to_i / 60}").and_return(1)
+        allow(redis).to receive(:incr).with("192.168.1.1:#{Time.now.to_i / 60}").and_return(1)
+        allow(redis).to receive(:expire)
+
+        status1, = rate_limiter.call(ip)
+        status2, = rate_limiter.call('192.168.1.1')
+
+        expect(status1).to eq(200)
+        expect(status2).to eq(200)
       end
     end
   end

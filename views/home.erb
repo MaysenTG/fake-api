@@ -1,0 +1,43 @@
+<div class="ui vertical segment">
+  <div class="ui middle aligned stackable centered grid container" style="margin-top: 2rem; width: 80%;">
+    <h2 class="ui header">Generate fake API data for any subject</h2>
+    <p>Fake API is the solution of fake API generators having static content. Our API provides the generation of <strong>any type of data</strong>. We currently rate limit to 10 uncached requests per 60 seconds, but I plan to add paid non rate limited requests later on.</p>
+    <div class="row">
+      <div class="six wide column">
+        <h3 class="ui header">Interested?</h3>
+        <p>Give it a go. Use the API below to get some data</p>
+        <form id="api-form" class="ui form">
+          <div class="field">
+            <div class="ui labeled input">
+              <div class="ui label" for="api-endpoint">
+                ../api/
+              </div>
+              <input type="text" id="api-endpoint" name="endpoint" placeholder="posts/1">
+            </div>
+          </div>
+          <div class="field">
+            <label>Query Parameters</label>
+            <div class="field">
+              <label>
+                Properties
+                <i class="question circle icon popup" data-content="Properties are extra properties added to the JSON data." data-variation="small"></i>
+              </label>
+              <input type="text" id="property-param-value" name="properties" disabled placeholder="id,name,age">
+            </div>
+            <div class="field">
+              <label>
+                Key
+                <i class="question circle icon popup"  data-content="Keys are how the JSON response is structured. Data is nested under the 'data' key by default, but adding 'data/v1', for example, will add a double nested response. Give it a go!." data-variation="small"></i>
+              </label>
+              <input type="text" id="key-param-value" disabled name="key" placeholder="data/v1">
+            </div>
+          </div>
+          <button type="submit" class="ui button primary fluid">Submit</button>
+        </form>
+      </div>
+      <div class="ten wide right floated column">
+        <pre style="max-height: 30rem; min-height: 30rem; overflow-y: auto;"><code class="language-json" id="api-code-block"></code></pre>
+      </div>
+    </div>
+  </div>
+</div>

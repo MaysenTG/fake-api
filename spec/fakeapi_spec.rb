@@ -1,21 +1,14 @@
 require 'spec_helper'
 require 'rack/test'
 require_relative '../fakeapi'
-require 'byebug'
+require_relative '../poros/data_generator'
+require_relative '../errors/rate_limiting'
 
 RSpec.describe FakeApi do
   include Rack::Test::Methods
 
   def app
     FakeApi.new
-  end
-
-  describe 'GET /' do
-    it 'returns the help message' do
-      get '/'
-      expect(last_response).to be_ok
-      expect(parse_json(last_response)).to eq({ message: HelpMessage.help })
-    end
   end
 
   describe 'GET /api' do
@@ -28,8 +21,9 @@ RSpec.describe FakeApi do
 
   describe 'GET /api/:route_name' do
     before do
-      allow(DataGenerator).to receive(:generate).and_return({ 'people' => [{ name: 'Maysen', age: 100 },
-                                                                           { name: 'Bob', age: 101 }] })
+      allow(DataGenerator).to receive(:generate).and_return({ data: { 'people' => [{ name: 'Maysen', age: 100 },
+                                                                                   { name: 'Bob',
+                                                                                     age: 101 }] }, cached: false })
     end
 
     context 'with valid parameters' do
@@ -42,19 +36,20 @@ RSpec.describe FakeApi do
     end
 
     context 'when passing in a key' do
-      it 'returns an error message' do
+      it 'adds those keys to the response' do
         get '/api/people?properties=name,age&key=api/v1'
         expect(last_response.status).to eq(200)
         expect(parse_json(last_response)).to have_key(:api)
         expect(parse_json(last_response)[:api]).to have_key(:v1)
         expect(parse_json(last_response)[:api][:v1]).to eq({ people: [{ name: 'Maysen', age: 100 },
-                                                                      { name: 'Bob', age: 101 }] })
+                                                                      { name: 'Bob',
+                                                                        age: 101 }] })
       end
     end
 
     context 'when rate limited' do
       before do
-        allow(DataGenerator).to receive(:generate).and_raise(RateLimitingError.new('Rate limit exceeded'))
+        allow(DataGenerator).to receive(:generate).and_raise(Errors::RateLimiting.new('Rate limit exceeded'))
       end
 
       it 'returns a rate limiting error' do
