@@ -13,8 +13,8 @@ class DataGenerator
     @content_name = content_name
     @properties = properties
     @ip = ip
-    @redis = Redis.new(url: 'redis://localhost:6379/0')
-    @rate_limiter = RateLimiter.new(limit: 1, period: 60)
+    @redis = Redis.new(url: ENV['REDIS_URL'])
+    @rate_limiter = RateLimiter.new
   end
 
   def self.generate(**kwargs)

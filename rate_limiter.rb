@@ -2,9 +2,9 @@ require 'dotenv/load'
 require 'redis'
 
 class RateLimiter
-  def initialize(options = {})
-    @limit = options[:limit] || 50
-    @period = options[:period] || 60
+  def initialize
+    @limit = ENV['RATE_LIMIT'].to_i
+    @period = ENV['RATE_LIMIT_PERIOD'].to_i
     @redis = Redis.new(url: ENV['REDIS_URL'])
   end
 
