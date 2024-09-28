@@ -8,6 +8,15 @@
     <script src="js/initializers.js"></script>
     <%= erb :scripts %>
   </head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-VSRT287KYE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-VSRT287KYE');
+  </script>
   <body>
     <%= erb :'partials/navbar' %>
     <main class="container">
