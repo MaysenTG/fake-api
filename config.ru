@@ -1,3 +1,2 @@
 require './fakeapi'
-# run Sinatra::Application
-Sinatra::Application.run!
+run FakeApi

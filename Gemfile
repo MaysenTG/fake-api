@@ -5,7 +5,7 @@ gem 'byebug', '~> 11.1', group: :development
 
 # Web server
 gem 'falcon', '~> 0.48.2'
-gem 'rackup', '~> 2.1'
+gem 'rackup'
 
 # Redis for caching
 gem 'redis', '~> 5.3'
@@ -14,7 +14,7 @@ gem 'redis', '~> 5.3'
 gem 'ruby-openai', '~> 7.1'
 
 # Sinatra for the web app
-gem 'sinatra', '~> 4.0'
+gem 'sinatra'
 
 # For rate limiting
 gem 'rack-attack'
