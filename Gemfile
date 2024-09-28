@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem 'byebug', '~> 11.1', group: :development
 
 # Web server
-gem 'falcon', '~> 0.48.2'
+gem 'puma'
 gem 'rackup'
 
 # Redis for caching
