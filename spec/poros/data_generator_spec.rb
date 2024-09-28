@@ -56,7 +56,9 @@ RSpec.describe DataGenerator do
     context 'when data is cached' do
       it 'returns cached data' do
         allow(data_generator.send(:cache)).to receive(:get).and_return('{"key":"value"}')
-        expect(data_generator.generate).to eq({ data: { 'key' => 'value' }, cached: true })
+        allow(data_generator.send(:cache)).to receive(:ttl).and_return(1000)
+        expect(data_generator.generate).to eq({ data: { 'key' => 'value' }, cached: true,
+                                                time_to_expiration: (Time.now + 1000).strftime('%Y-%m-%d %H:%M') })
       end
     end
 
@@ -66,6 +68,7 @@ RSpec.describe DataGenerator do
         allow(data_generator).to receive(:check_rate_limit)
         allow(data_generator.send(:openai_client)).to receive(:request_data).and_return('{"key":"value"}')
         allow(data_generator.send(:cache)).to receive(:set).with('{"key":"value"}')
+        allow(data_generator.send(:cache)).to receive(:ttl).and_return(1000)
 
         expect(data_generator.generate).to eq({ data: { 'key' => 'value' }, cached: false })
       end

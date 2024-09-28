@@ -25,7 +25,7 @@ class DataGenerator
     cached_response = cache.get
     if cached_response
       return { data: JSON.parse(cached_response), cached: true,
-               time_to_expiration: Time.now + cache.ttl }
+               time_to_expiration: (Time.now + cache.ttl).strftime('%Y-%m-%d %H:%M') }
     end
 
     check_rate_limit
