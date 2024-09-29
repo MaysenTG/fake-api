@@ -32,9 +32,11 @@ module Helpers
   def handle_not_found
     request_path = request.path_info
     if request_path.start_with?('/api/') && request_path.split('/').length > 3
+      content_type :json
       { error: "We don't accept nested routes" }.to_json
     else
-      { message: 'This is nowhere to be found.' }.to_json
+      content_type :html
+      erb :'errors/404/index', layout: :'errors/404/layout'
     end
   end
 end

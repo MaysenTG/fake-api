@@ -70,7 +70,7 @@ RSpec.describe FakeApi do
     it 'returns a not found message for other paths' do
       get '/nonexistent'
       expect(last_response.status).to eq(404)
-      expect(parse_json(last_response)).to eq({ message: 'This is nowhere to be found.' })
+      expect(last_response.body).to include('404 - Page Not Found')
     end
   end
 end

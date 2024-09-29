@@ -1,0 +1,22 @@
+div.home-page-container {
+  margin-top: 2rem !important;
+  width: 80% !important;
+}
+
+pre.code-block-wrapper {
+  max-height: 30rem !important;
+  min-height: 30rem !important;
+  overflow-y: auto !important;
+}
+
+footer .footer-wrapper {
+  padding: 1rem !important;
+}
+
+.navbar-hero-wrapper {
+  margin-bottom: 5rem !important;
+}
+
+.navbar-hero-header {
+  margin-top: 2rem !important;
+}
