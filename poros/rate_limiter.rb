@@ -1,12 +1,11 @@
-require 'dotenv/load'
-require 'redis'
+require_relative 'redis_connection'
 
 class RateLimiter
   def initialize
     @limit = ENV['RATE_LIMIT'].to_i
     @period = ENV['RATE_LIMIT_PERIOD'].to_i
     @rate_limiting_disabled = ENV['DISABLE_RATE_LIMITING'] == 'true'
-    @redis = Redis.new(url: ENV['REDIS_URL'])
+    @redis = RedisConnection.client
   end
 
   def call(ip)

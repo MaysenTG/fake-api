@@ -1,16 +1,18 @@
 require 'spec_helper'
 require 'rack/test'
 require 'redis'
-require 'byebug'
 require_relative '../../poros/rate_limiter'
+require_relative '../../poros/redis_connection'
 
 RSpec.describe RateLimiter do
   let(:redis) { instance_double(Redis) }
-  let(:rate_limiter) { RateLimiter.new }
+  let(:rate_limiter) { described_class.new }
   let(:ip) { '127.0.0.1' }
 
   before do
-    allow(Redis).to receive(:new).and_return(redis)
+    RedisConnection.reset!
+    allow(RedisConnection).to receive(:client).and_return(redis)
+    allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with('RATE_LIMIT').and_return('5')
     allow(ENV).to receive(:[]).with('RATE_LIMIT_PERIOD').and_return('60')
     allow(ENV).to receive(:[]).with('REDIS_URL').and_return('redis://localhost:6379/0')

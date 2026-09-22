@@ -75,7 +75,7 @@ This is a simple Ruby Sinatra application that provides a fake API for generatin
   curl http://localhost:4567/api/your_route_name?properties=prop1,prop2&key=your_key
   ```
 
-  Rate limiting is disabled by default through the `.env` file, but can be enabled by changing `DISABLE_RATE_LIMITING` to true
+  Rate limiting is disabled by default through the `.env` file, but can be enabled by changing `DISABLE_RATE_LIMITING` to `false`
 
   To change the rate limit configuration, update `RATE_LIMIT` and `RATE_LIMIT_PERIOD` in the .env file. `RATE_LIMIT_PERIOD` is in seconds, and defaults to 60 seconds.
 

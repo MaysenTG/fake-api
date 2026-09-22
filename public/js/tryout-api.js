@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     keyParamInput.disabled = inputEmpty;
   });
 
-  handleInput(propertyParamInput, "property");
+  handleInput(propertyParamInput, "properties");
   handleInput(keyParamInput, "key");
 
   apiSubmitForm.addEventListener("submit", async (e) => {
@@ -77,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     codeBlock.textContent =
-      "Loading... If this endpoint is uncached, it will take a few moments to generate the data";
+      "Loading… Uncached requests can take a few seconds to generate.";
 
     submitButton.classList.add("loading");
     toggleDisabled(submitButton, contentInput, true);
@@ -95,17 +95,22 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
       codeBlock.textContent = JSON.stringify(data, undefined, 2);
       Prism.highlightAll();
 
-      if (!data.cached && data.status === 200) {
+      if (data.cached === false) {
         writeRateLimitSessionWarning();
       }
     } catch (error) {
       new Notify({
         status: "error",
         title: "Error",
-        text: "An error occurred while fetching the API: " + error,
+        text: "Couldn't fetch the API: " + error.message,
       });
     } finally {
       submitButton.classList.remove("loading");

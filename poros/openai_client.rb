@@ -1,5 +1,4 @@
 require 'openai'
-require 'dotenv/load'
 
 class OpenAIClient
   def initialize
@@ -16,7 +15,15 @@ class OpenAIClient
       }
     )
 
-    response.dig('choices', 0, 'message', 'content')
+    if (error = response['error'])
+      message = error.is_a?(Hash) ? error['message'] : error.to_s
+      raise StandardError, "OpenAI API error: #{message}"
+    end
+
+    content = response.dig('choices', 0, 'message', 'content')
+    raise StandardError, 'OpenAI returned no content' if content.nil? || content.strip.empty?
+
+    content
   end
 
   private

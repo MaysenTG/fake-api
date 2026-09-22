@@ -1,38 +1,39 @@
 <div class="ui vertical segment">
   <div class="ui middle aligned stackable centered grid container home-page-container">
     <h2 class="ui header">Generate fake API data for any subject</h2>
-    <p>Fake API is the solution of fake API generators having static content. Our API provides the generation of <strong>any type of data</strong>. We currently rate limit to 10 uncached requests per 60 seconds, but I plan to add paid non rate limited requests later on.</p>
+    <p>Most mock APIs ship the same canned datasets. Fake API uses AI to generate <strong>fresh JSON for whatever you ask for</strong>—handy for prototyping, tests, and demos. Uncached requests are limited to 10 per 60 seconds; cached responses are free to refetch.</p>
     <div class="row">
       <div class="six wide column">
-        <h3 class="ui header">Interested?</h3>
-        <p>Give it a go. Use the API below to get some data</p>
+        <h3 class="ui header">Try it</h3>
+        <p>Enter a content name below and hit submit to generate sample data.</p>
         <form id="api-form" class="ui form">
           <div class="field">
+            <label for="api-endpoint">Endpoint</label>
             <div class="ui labeled input">
-              <div class="ui label" for="api-endpoint">
+              <div class="ui label">
                 ../api/
               </div>
-              <input type="text" id="api-endpoint" name="endpoint" placeholder="posts/1">
+              <input type="text" id="api-endpoint" name="endpoint" placeholder="people" autocomplete="off">
             </div>
           </div>
           <div class="field">
-            <label>Query Parameters</label>
+            <label>Query parameters</label>
             <div class="field">
-              <label>
+              <label for="property-param-value">
                 Properties
-                <i class="question circle icon popup" data-content="Properties are extra properties added to the JSON data." data-variation="small"></i>
+                <i class="question circle icon popup" data-content="Optional fields to include on each item, e.g. id, name, age." data-variation="small"></i>
               </label>
               <input type="text" id="property-param-value" name="properties" disabled placeholder="id,name,age">
             </div>
             <div class="field">
-              <label>
+              <label for="key-param-value">
                 Key
-                <i class="question circle icon popup"  data-content="Keys are how the JSON response is structured. Data is nested under the 'data' key by default, but adding 'data/v1', for example, will add a double nested response. Give it a go!." data-variation="small"></i>
+                <i class="question circle icon popup" data-content="Nest the payload under this path. Default is data. Use slashes for nesting, e.g. data/v1." data-variation="small"></i>
               </label>
               <input type="text" id="key-param-value" disabled name="key" placeholder="data/v1">
             </div>
           </div>
-          <button type="submit" class="ui button primary fluid">Submit</button>
+          <button type="submit" class="ui button primary fluid">Generate</button>
         </form>
       </div>
       <div class="ten wide right floated column">

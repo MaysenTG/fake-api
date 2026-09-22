@@ -1,6 +1,5 @@
 require 'spec_helper'
 require 'rack/test'
-require 'byebug'
 require_relative '../../poros/data_generator'
 require_relative '../../poros/rate_limiter'
 
@@ -9,14 +8,16 @@ RSpec.describe DataGenerator do
   let(:properties) { %w[property1 property2] }
   let(:ip) { '127.0.0.1' }
   let(:redis) { instance_double(Redis) }
-  let(:rate_limiter) { RateLimiter.new }
-  let(:openai_client) { OpenAIClient.new }
+  let(:rate_limiter) { instance_double(RateLimiter) }
+  let(:openai_client) { instance_double(OpenAIClient) }
+  let(:cache) { instance_double(Cache) }
   let(:data_generator) { described_class.new(content_name:, properties:, ip:) }
 
   before do
-    allow(Redis).to receive(:new).and_return(redis)
+    allow(RedisConnection).to receive(:client).and_return(redis)
     allow(RateLimiter).to receive(:new).and_return(rate_limiter)
     allow(OpenAIClient).to receive(:new).and_return(openai_client)
+    allow(Cache).to receive(:new).and_return(cache)
   end
 
   describe '#initialize' do
@@ -27,50 +28,65 @@ RSpec.describe DataGenerator do
     end
   end
 
-  describe '#cache' do
-    it 'returns a Cache instance' do
-      expect(data_generator.send(:cache)).to be_a(Cache)
-    end
-  end
-
-  describe '#rate_limiter' do
-    it 'returns a RateLimiter instance' do
-      expect(data_generator.send(:rate_limiter)).to be_a(RateLimiter)
-    end
-  end
-
-  describe '#openai_client' do
-    it 'returns an OpenAIClient instance' do
-      expect(data_generator.send(:openai_client)).to be_a(OpenAIClient)
-    end
-  end
-
-  describe '#check_rate_limit' do
-    it 'raises Errors::RateLimiting when rate limit is exceeded' do
-      allow(rate_limiter).to receive(:call).with(ip).and_return([429, {}, 'Rate limit exceeded'])
-      expect { data_generator.send(:check_rate_limit) }.to raise_error(Errors::RateLimiting, 'Rate limit exceeded')
-    end
-  end
-
   describe '#generate' do
     context 'when data is cached' do
       it 'returns cached data' do
-        allow(data_generator.send(:cache)).to receive(:get).and_return('{"key":"value"}')
-        allow(data_generator.send(:cache)).to receive(:ttl).and_return(1000)
-        expect(data_generator.generate).to eq({ data: { 'key' => 'value' }, cached: true,
-                                                time_to_expiration: (Time.now + 1000).strftime('%Y-%m-%d %H:%M') })
+        allow(cache).to receive(:get).and_return('{"key":"value"}')
+        allow(cache).to receive(:ttl).and_return(1000)
+
+        expect(data_generator.generate).to eq(
+          {
+            data: { 'key' => 'value' },
+            cached: true,
+            time_to_expiration: (Time.now + 1000).strftime('%Y-%m-%d %H:%M')
+          }
+        )
+      end
+    end
+
+    context 'when cached data is invalid JSON' do
+      it 'ignores the cache and regenerates' do
+        allow(cache).to receive(:get).and_return('not-json')
+        allow(rate_limiter).to receive(:call).with(ip).and_return([200, {}, {}])
+        allow(openai_client).to receive(:request_data).and_return('{"key":"value"}')
+        expect(cache).to receive(:set).with('{"key":"value"}')
+
+        expect(data_generator.generate).to eq({ data: { 'key' => 'value' }, cached: false })
       end
     end
 
     context 'when data is not cached' do
+      before do
+        allow(cache).to receive(:get).and_return(nil)
+        allow(rate_limiter).to receive(:call).with(ip).and_return([200, {}, {}])
+      end
+
       it 'generates new data and caches it' do
-        allow(data_generator.send(:cache)).to receive(:get).and_return(nil)
-        allow(data_generator).to receive(:check_rate_limit)
-        allow(data_generator.send(:openai_client)).to receive(:request_data).and_return('{"key":"value"}')
-        allow(data_generator.send(:cache)).to receive(:set).with('{"key":"value"}')
-        allow(data_generator.send(:cache)).to receive(:ttl).and_return(1000)
+        allow(openai_client).to receive(:request_data).and_return('{"key":"value"}')
+        expect(cache).to receive(:set).with('{"key":"value"}')
 
         expect(data_generator.generate).to eq({ data: { 'key' => 'value' }, cached: false })
+      end
+
+      it 'does not cache empty responses' do
+        allow(openai_client).to receive(:request_data).and_return('   ')
+        expect(cache).not_to receive(:set)
+
+        expect { data_generator.generate }.to raise_error(StandardError, 'OpenAI returned an empty response')
+      end
+
+      it 'does not cache invalid JSON' do
+        allow(openai_client).to receive(:request_data).and_return('not-json')
+        expect(cache).not_to receive(:set)
+
+        expect { data_generator.generate }.to raise_error(StandardError, 'OpenAI returned invalid JSON')
+      end
+
+      it 'does not cache non-object JSON values' do
+        allow(openai_client).to receive(:request_data).and_return('"just a string"')
+        expect(cache).not_to receive(:set)
+
+        expect { data_generator.generate }.to raise_error(StandardError, 'OpenAI returned an unexpected JSON structure')
       end
     end
   end

@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
       input: { content_type: "people", properties: [] },
       data_expiration_hours: "4 hours",
       cached: true,
-      time_to_expiration: "Some time in the future",
+      time_to_expiration: "2026-09-22 20:00",
       data: {
         people: [
           { id: 1, name: "John Doe", age: 25, city: "New York" },

@@ -1,4 +1,7 @@
 require 'sinatra/base'
+require 'dotenv'
+Dotenv.overwrite(File.expand_path('.env', __dir__))
+
 require_relative 'poros/data_generator'
 require_relative 'poros/help_message'
 require_relative 'poros/rate_limiter'
